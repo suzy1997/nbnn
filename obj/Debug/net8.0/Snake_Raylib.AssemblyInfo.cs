@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Snake_Raylib")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+31e8f0d6fffd6ce794d17216280a4e6e2d079156")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b9d8e2022b5991d42e79e13f4a454c666c8f1061")]
 [assembly: System.Reflection.AssemblyProductAttribute("Snake_Raylib")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Snake_Raylib")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
