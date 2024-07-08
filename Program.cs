@@ -1,4 +1,5 @@
-﻿   using Raylib_cs;
+﻿using Raylib_cs;
+using System;
 using System.Numerics;
 using System.Collections.Generic;
 
@@ -16,19 +17,30 @@ class Program
     private int foodCount = 0;
     const int screenWidth = 800;
     const int screenHeight = 450;
-    private List<GameObject> body;
+
     struct Snake
     {
         int size;
         int dir;
-        int speed;
+        Vector2 speed;
         Vector2 postion;
+        Color color;
     }
+
+    struct Food 
+    {
+        Vector2 positon;
+        Vector2 size;
+        bool active;
+        Color color;
+    }
+
+
 
     void InitGame () 
     {
 
-        
+        Snake snake1 = new Snake ();
        
 
 
@@ -48,8 +60,13 @@ class Program
 
         while (!Raylib.WindowShouldClose())
         {
-            if (Raylib.IsKeyDown(KeyboardKey.Right)) 
-                ballPosition.X += 2.0f;
+            if (Raylib.IsKeyDown(KeyboardKey.Right))
+            {
+            ballPosition.X += 2.0f;
+                snake1[0].speed= (Vector2){ 31, 0 };
+
+            }
+               
             if (Raylib.IsKeyDown(KeyboardKey.Left)) ballPosition.X  -= 2.0f;
             if (Raylib.IsKeyDown(KeyboardKey.Up)) ballPosition.Y -= 2.0f;
             if (Raylib.IsKeyDown(KeyboardKey.Down)) ballPosition.Y += 2.0f;

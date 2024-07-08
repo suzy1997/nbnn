@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\suzy'\\Downloads\\Snake_Raylib\\Snake_Raylib.csproj": {}
+    "D:\\Unity\\nbnn\\Snake_Raylib.csproj": {}
   },
   "projects": {
-    "C:\\Users\\suzy'\\Downloads\\Snake_Raylib\\Snake_Raylib.csproj": {
+    "D:\\Unity\\nbnn\\Snake_Raylib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\suzy'\\Downloads\\Snake_Raylib\\Snake_Raylib.csproj",
+        "projectUniqueName": "D:\\Unity\\nbnn\\Snake_Raylib.csproj",
         "projectName": "Snake_Raylib",
-        "projectPath": "C:\\Users\\suzy'\\Downloads\\Snake_Raylib\\Snake_Raylib.csproj",
+        "projectPath": "D:\\Unity\\nbnn\\Snake_Raylib.csproj",
         "packagesPath": "C:\\Users\\suzy'\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\suzy'\\Downloads\\Snake_Raylib\\obj\\",
+        "outputPath": "D:\\Unity\\nbnn\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\suzy'\\AppData\\Roaming\\NuGet\\NuGet.Config",
