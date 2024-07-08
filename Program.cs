@@ -2,152 +2,208 @@
 using System;
 using System.Numerics;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace HelloWorld
 {
     class Program
     {
-        private static bool eatfood = false;
-        private static bool dead = false;
-        private static int foodCount = 0;
+        //window status
         const int screenWidth = 640;
         const int screenHeight = 480;
-        private static List<Vector2> snakeBody;
-        private static Vector2 foodPosition;
-        private static Vector2 direction = new Vector2(20, 0); // 初始方向为向右
-        private static float speed = 20.0f; // 每次移动的距离
+        static int framesCounter = 0;
+        private static bool GameOver = false;
+        static bool pause = false;
 
-        public struct Snake
-        {
-            public int size;
-            public int dir;
-            public int speed;
-        }
+        //snake status
+        private static float speed=10.0f;
+        private static Vector2 direction = new Vector2(10, 0);
+        private static List<Vector2> SnakeBody;
+        private static Vector2 HeadPosition;
+        static bool allowMove = false;
+
+
+
+        //food status
+        private static Vector2 FoodPosition;
+        private static Vector2 foodPos;
+        private static bool eatfood=false;
+
+        
 
         static void InitGame()
         {
-            // 初始化窗口
+
+            framesCounter = 0;
+            GameOver = false;
+            pause = false;
+            allowMove = false;
+            
+            // intial window
             Raylib.InitWindow(screenWidth, screenHeight, "snake game window");
             Raylib.SetTargetFPS(10);
 
-            // 初始化蛇
-            snakeBody = new List<Vector2>
+
+            if(Raylib.IsKeyDown(KeyboardKey.Enter))
             {
-                new Vector2(100, 100),
-                new Vector2(80, 100),
-                new Vector2(60, 100)
+                //intial status
+                GameOver = false;
+                eatfood = false;
+            }
+
+
+            if (!GameOver)
+            {
+                //intial snake position
+                HeadPosition = new Vector2(Raylib.GetRandomValue(0, screenWidth / 10) * 10, Raylib.GetRandomValue(0, screenHeight / 10) * 10);
+                SnakeBody = new List<Vector2>()
+            {
+            new Vector2(HeadPosition.X,HeadPosition.Y),
+            new Vector2(HeadPosition.X-10,HeadPosition.Y),
+            new Vector2(HeadPosition.X-20,HeadPosition.Y)
             };
 
-            // 初始化食物
-            GenerateFood();
+                Generate();
+
+
+            }
+            
+
         }
 
-        public static void Main()
+        public static void Update(string[] args)
+        {
+            if (!GameOver)
+            {
+
+                if (Raylib.IsKeyDown(KeyboardKey.Enter))
+                { 
+
+                pause = !pause;
+                }
+
+                if (!pause)
+                {
+                    //player input
+                    if (Raylib.IsKeyDown(KeyboardKey.Right) && direction != new Vector2(-10, 0))
+                    {
+                        direction = new Vector2(10, 0);
+                    }
+                    if (Raylib.IsKeyDown(KeyboardKey.Left) && direction != new Vector2(10, 0))
+                    {
+                        direction = new Vector2(-10, 0);
+                    }
+                    if (Raylib.IsKeyDown(KeyboardKey.Up) && direction != new Vector2(0, 10))
+                    {
+                        direction = new Vector2(0, -10);
+                    }
+                    if (Raylib.IsKeyDown(KeyboardKey.Down) && direction != new Vector2(0, -10))
+                    {
+                        direction = new Vector2(0, 10);
+                    }
+
+                    //snake movement
+                    HeadPosition = SnakeBody[0] + direction;
+                    SnakeBody.RemoveAt(SnakeBody.Count - 1);
+                    SnakeBody.Insert(0, HeadPosition);
+
+                    //check whether eat food
+                    if (Vector2.Distance(SnakeBody[0], FoodPosition) < 10)
+                    {
+                        eatfood = true;
+                        SnakeBody.Add(SnakeBody[SnakeBody.Count - 1]);
+                        Generate();
+                    }
+                }
+
+                //Game Over
+                if (HeadPosition.X == screenWidth ||
+                    HeadPosition.X == 0 ||
+                    HeadPosition.Y == screenHeight || HeadPosition.Y == 0)
+                {
+                    GameOver = true; 
+
+                }
+
+            }
+            else
+            {
+
+                if (Raylib.IsKeyDown(KeyboardKey.Enter))
+                {
+                    Raylib.CloseWindow();
+                    InitGame();
+                    GameOver = false;
+                }
+            }
+
+        }
+
+
+        public static void Main(string[] args)
         {
             InitGame();
 
             while (!Raylib.WindowShouldClose())
             {
-                Update();
+                Update(args);
+                
                 Draw();
             }
 
             Raylib.CloseWindow();
+
         }
 
-        static void Update()
+        static void Generate()  
         {
-            // 更新方向
-            if (Raylib.IsKeyDown(KeyboardKey.Right) && direction != new Vector2(-20, 0))
-                direction = new Vector2(20, 0);
-            if (Raylib.IsKeyDown(KeyboardKey.Left) && direction != new Vector2(20, 0))
-                direction = new Vector2(-20, 0);
-            if (Raylib.IsKeyDown(KeyboardKey.Up) && direction != new Vector2(0, 20))
-                direction = new Vector2(0, -20);
-            if (Raylib.IsKeyDown(KeyboardKey.Down) && direction != new Vector2(0, -20))
-                direction = new Vector2(0, 20);
-
-            // 移动蛇的身体
-            for (int i = snakeBody.Count - 1; i > 0; i--)
+            //intial food position  foodPos.X== HeadPosition.X && foodPos.Y == HeadPosition.Y
+            foodPos = new Vector2(Raylib.GetRandomValue(0, screenWidth), Raylib.GetRandomValue(0, screenHeight));
+            while (HeadPosition == foodPos)
             {
-                snakeBody[i] = snakeBody[i - 1];
+                foodPos = new Vector2(Raylib.GetRandomValue(0, screenWidth), Raylib.GetRandomValue(0, screenHeight));
             }
-            snakeBody[0] += direction;
-
-            // 检查是否吃到食物
-            if (Vector2.Distance(snakeBody[0], foodPosition) < 20)
+            FoodPosition = foodPos;
+            if (eatfood)
             {
-                eatfood = true;
-                snakeBody.Add(snakeBody[snakeBody.Count - 1]); // 增加蛇的长度
-                GenerateFood();
-            }
+                FoodPosition = new Vector2(Raylib.GetRandomValue(0, screenWidth/10)*10, Raylib.GetRandomValue(0, screenHeight / 10) * 10);
 
-            // 检查是否撞到边界
-            if (snakeBody[0].X < 0 || snakeBody[0].X >= screenWidth ||
-                snakeBody[0].Y < 0 || snakeBody[0].Y >= screenHeight)
-            {
-                dead = true;
             }
-
-            // 检查是否撞到自己
-            for (int i = 1; i < snakeBody.Count; i++)
-            {
-                if (snakeBody[0] == snakeBody[i])
-                {
-                    dead = true;
-                }
-            }
-
-            if (dead)
-            {
-                // 重新初始化游戏
-                InitGame();
-            }
+            
         }
 
-        static void Draw()
+        public static void Draw()
         {
             Raylib.BeginDrawing();
 
             Raylib.ClearBackground(Color.White);
 
-            // 绘制食物
-            Raylib.DrawRectangleV(foodPosition, new Vector2(20, 20), Color.Red);
-
-            // 绘制蛇
-            foreach (Vector2 segment in snakeBody)
+            if (!GameOver)
             {
-                Raylib.DrawRectangleV(segment, new Vector2(20, 20), Color.Gold);
+                // draw food
+                Raylib.DrawRectangleV(FoodPosition, new Vector2(10, 10), Color.Green);
+
+                // draw snake
+                foreach (Vector2 segment in SnakeBody)
+                {
+                    Raylib.DrawRectangleV(segment, new Vector2(10, 10), Color.Red);
+                }
+
+                if (pause)
+                {
+                    Raylib.DrawText("GAME PAUSED", screenWidth / 2 - Raylib.MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, Color.Gray); ;
+                }
             }
+            else
+            {
+                Raylib.DrawText("PRESS [ENTER] TO PLAY AGAIN", Raylib.GetScreenWidth() / 2 - Raylib.MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20) / 2, Raylib.GetScreenHeight() / 2 - 50, 20, Color.Gray);
+            }
+
+           
 
             Raylib.EndDrawing();
         }
 
-        static void GenerateFood()
-        {
-            Random rand = new Random();
-            Vector2 newFoodPosition;
-            bool validPosition;
 
-            do
-            {
-                validPosition = true;
-                newFoodPosition = new Vector2(
-                    rand.Next(0, screenWidth / 20) * 20,
-                    rand.Next(0, screenHeight / 20) * 20
-                );
-
-                foreach (var segment in snakeBody)
-                {
-                    if (Vector2.Distance(newFoodPosition, segment) < 20)
-                    {
-                        validPosition = false;
-                        break;
-                    }
-                }
-            } while (!validPosition);
-
-            foodPosition = newFoodPosition;
-        }
     }
 }
