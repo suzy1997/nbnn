@@ -22,19 +22,18 @@ namespace HelloWorld
         private static Vector2 HeadPosition;
         static bool allowMove = false;
 
-
-
         //food status
         private static Vector2 FoodPosition;
         private static Vector2 foodPos;
         private static bool eatfood=false;
+        private static int foodAcount=0;
 
-        
 
         static void InitGame()
         {
 
             framesCounter = 0;
+            foodAcount = 0;
             GameOver = false;
             pause = false;
             allowMove = false;
@@ -57,12 +56,13 @@ namespace HelloWorld
                 //intial snake position
                 HeadPosition = new Vector2(Raylib.GetRandomValue(0, screenWidth / 10) * 10, Raylib.GetRandomValue(0, screenHeight / 10) * 10);
                 SnakeBody = new List<Vector2>()
-            {
-            new Vector2(HeadPosition.X,HeadPosition.Y),
-            new Vector2(HeadPosition.X-10,HeadPosition.Y),
-            new Vector2(HeadPosition.X-20,HeadPosition.Y)
-            };
+                {
+                new Vector2(HeadPosition.X,HeadPosition.Y),
+                new Vector2(HeadPosition.X-10,HeadPosition.Y),
+                new Vector2(HeadPosition.X-20,HeadPosition.Y)
+                };
 
+                //generate food
                 Generate();
 
 
@@ -78,7 +78,6 @@ namespace HelloWorld
 
                 if (Raylib.IsKeyDown(KeyboardKey.Enter))
                 { 
-
                 pause = !pause;
                 }
 
@@ -112,6 +111,7 @@ namespace HelloWorld
                     {
                         eatfood = true;
                         SnakeBody.Add(SnakeBody[SnakeBody.Count - 1]);
+                        foodAcount++;
                         Generate();
                     }
                 }
@@ -157,17 +157,17 @@ namespace HelloWorld
 
         static void Generate()  
         {
-            //intial food position  foodPos.X== HeadPosition.X && foodPos.Y == HeadPosition.Y
+            //intial food position  
             foodPos = new Vector2(Raylib.GetRandomValue(0, screenWidth), Raylib.GetRandomValue(0, screenHeight));
             while (HeadPosition == foodPos)
             {
                 foodPos = new Vector2(Raylib.GetRandomValue(0, screenWidth), Raylib.GetRandomValue(0, screenHeight));
             }
             FoodPosition = foodPos;
+
             if (eatfood)
             {
                 FoodPosition = new Vector2(Raylib.GetRandomValue(0, screenWidth/10)*10, Raylib.GetRandomValue(0, screenHeight / 10) * 10);
-
             }
             
         }
@@ -184,14 +184,20 @@ namespace HelloWorld
                 Raylib.DrawRectangleV(FoodPosition, new Vector2(10, 10), Color.Green);
 
                 // draw snake
-                foreach (Vector2 segment in SnakeBody)
+                for (int i = 0; i < SnakeBody.Count; i++)
                 {
-                    Raylib.DrawRectangleV(segment, new Vector2(10, 10), Color.Red);
+                    Vector2 segment = SnakeBody[i];
+                    //random snake color
+                    Color segmentColor = new Color(0, Raylib.GetRandomValue(0, 255), Raylib.GetRandomValue(0, 255), 255); 
+                    Raylib.DrawRectangleV(segment, new Vector2(10, 10), segmentColor);
                 }
+
+                //draw Score counting
+                Raylib.DrawText("Score:" + foodAcount , 10, 10, 30, Color.Pink);
 
                 if (pause)
                 {
-                    Raylib.DrawText("GAME PAUSED", screenWidth / 2 - Raylib.MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, Color.Gray); ;
+                    Raylib.DrawText("GAME PAUSED", screenWidth / 2 - Raylib.MeasureText("GAME PAUSED", 40) / 2, screenHeight / 2 - 40, 40, Color.Gray); 
                 }
             }
             else
