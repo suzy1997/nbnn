@@ -14,6 +14,7 @@ namespace HelloWorld
         static int framesCounter = 0;
         private static bool GameOver = false;
         static bool pause = false;
+        static bool intialgame = false;
 
         //snake status
         private static float speed=10.0f;
@@ -27,6 +28,7 @@ namespace HelloWorld
         private static Vector2 foodPos;
         private static bool eatfood=false;
         private static int foodAcount=0;
+        
 
 
         static void InitGame()
@@ -37,6 +39,7 @@ namespace HelloWorld
             GameOver = false;
             pause = false;
             allowMove = false;
+            intialgame = true;
             
             // intial window
             Raylib.InitWindow(screenWidth, screenHeight, "snake game window");
@@ -54,7 +57,8 @@ namespace HelloWorld
             if (!GameOver)
             {
                 //intial snake position
-                HeadPosition = new Vector2(Raylib.GetRandomValue(0, screenWidth / 10) * 10, Raylib.GetRandomValue(0, screenHeight / 10) * 10);
+                //HeadPosition = new Vector2(Raylib.GetRandomValue(0, screenWidth / 10) * 10, Raylib.GetRandomValue(0, screenHeight / 10) * 10);
+                HeadPosition = new Vector2(240,140);
                 SnakeBody = new List<Vector2>()
                 {
                 new Vector2(HeadPosition.X,HeadPosition.Y),
@@ -63,7 +67,7 @@ namespace HelloWorld
                 };
 
                 //generate food
-                Generate();
+                FoodPosition = new Vector2(130,130);
 
 
             }
@@ -77,8 +81,8 @@ namespace HelloWorld
             {
 
                 if (Raylib.IsKeyDown(KeyboardKey.Enter))
-                { 
-                pause = !pause;
+                {
+                    pause = !pause;
                 }
 
                 if (!pause)
@@ -117,12 +121,20 @@ namespace HelloWorld
                 }
 
                 //Game Over
-                if (HeadPosition.X == screenWidth ||
-                    HeadPosition.X == 0 ||
-                    HeadPosition.Y == screenHeight || HeadPosition.Y == 0)
+                if (HeadPosition.X == screenWidth + 10 ||
+                    HeadPosition.X == -10 ||
+                    HeadPosition.Y == screenHeight+10 || HeadPosition.Y == -10)
                 {
                     GameOver = true; 
 
+                }
+
+                for (int i = 1; i < SnakeBody.Count; i++)
+                {
+                    if (SnakeBody[0] == SnakeBody[i])
+                    {
+                        GameOver = true;
+                    }
                 }
 
             }
@@ -157,17 +169,29 @@ namespace HelloWorld
 
         static void Generate()  
         {
-            //intial food position  
-            foodPos = new Vector2(Raylib.GetRandomValue(0, screenWidth), Raylib.GetRandomValue(0, screenHeight));
-            while (HeadPosition == foodPos)
-            {
-                foodPos = new Vector2(Raylib.GetRandomValue(0, screenWidth), Raylib.GetRandomValue(0, screenHeight));
-            }
-            FoodPosition = foodPos;
+
+             if (intialgame)
+                {
+                intialgame = false;    
+                }
 
             if (eatfood)
             {
-                FoodPosition = new Vector2(Raylib.GetRandomValue(0, screenWidth/10)*10, Raylib.GetRandomValue(0, screenHeight / 10) * 10);
+
+               
+                eatfood= false;
+                foodPos = new Vector2(Raylib.GetRandomValue(0, (screenWidth / 10) - 2) * 10,Raylib.GetRandomValue(0, (screenHeight / 10) - 2) * 10);
+
+                //make foodPos except snakePos
+                do
+                {
+                    foodPos = new Vector2(Raylib.GetRandomValue(0, (screenWidth / 10) - 2) * 10, Raylib.GetRandomValue(0, (screenHeight / 10) - 2) * 10);
+                } while (SnakeBody.Contains(foodPos));
+
+
+                FoodPosition = foodPos;
+
+                //FoodPosition = new Vector2(Raylib.GetRandomValue(0, screenWidth/10)*10, Raylib.GetRandomValue(0, screenHeight / 10) * 10);
             }
             
         }
