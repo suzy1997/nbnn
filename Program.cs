@@ -11,10 +11,10 @@ namespace HelloWorld
         //window status
         const int screenWidth = 640;
         const int screenHeight = 480;
-        static int framesCounter = 0;
         private static bool GameOver = false;
         static bool pause = false;
         static bool intialgame = false;
+        static int level = 0;
 
         //snake status
         private static float speed=10.0f;
@@ -34,7 +34,7 @@ namespace HelloWorld
         static void InitGame()
         {
 
-            framesCounter = 0;
+            level = 0;
             foodAcount = 0;
             GameOver = false;
             pause = false;
@@ -94,15 +94,15 @@ namespace HelloWorld
                     }
                     if (Raylib.IsKeyDown(KeyboardKey.Left) && direction != new Vector2(10, 0))
                     {
-                        direction = new Vector2(-10, 0);
+                        direction = new Vector2(-10 , 0);
                     }
                     if (Raylib.IsKeyDown(KeyboardKey.Up) && direction != new Vector2(0, 10))
                     {
-                        direction = new Vector2(0, -10);
+                        direction = new Vector2(0, -10 );
                     }
                     if (Raylib.IsKeyDown(KeyboardKey.Down) && direction != new Vector2(0, -10))
                     {
-                        direction = new Vector2(0, 10);
+                        direction = new Vector2(0, 10 );
                     }
 
                     //snake movement
@@ -116,11 +116,14 @@ namespace HelloWorld
                         eatfood = true;
                         SnakeBody.Add(SnakeBody[SnakeBody.Count - 1]);
                         foodAcount++;
+                        level = foodAcount / 4;
                         Generate();
+                        Raylib.SetTargetFPS(10*(1+level/2));
                     }
                 }
 
                 //Game Over
+                //snakehead touch screen
                 if (HeadPosition.X == screenWidth + 10 ||
                     HeadPosition.X == -10 ||
                     HeadPosition.Y == screenHeight+10 || HeadPosition.Y == -10)
@@ -128,7 +131,7 @@ namespace HelloWorld
                     GameOver = true; 
 
                 }
-
+                //snakehead touch snakebody
                 for (int i = 1; i < SnakeBody.Count; i++)
                 {
                     if (SnakeBody[0] == SnakeBody[i])
@@ -218,6 +221,7 @@ namespace HelloWorld
 
                 //draw Score counting
                 Raylib.DrawText("Score:" + foodAcount , 10, 10, 30, Color.Pink);
+                Raylib.DrawText("Lvel:" + level, 10, 40, 30, Color.Pink);
 
                 if (pause)
                 {
